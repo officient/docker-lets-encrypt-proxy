@@ -3,8 +3,8 @@ set +e
 echo "Machine has $(grep processor /proc/cpuinfo | wc -l) cores and $(awk '/MemTotal/ {print $2}' /proc/meminfo) kB RAM."
 
 # Create cache folders if they don't exits
-mkdir -p /cache/ssl
-mkdir -p /cache/web
+mkdir -p /cache/ssl /cache/web
+chown nobody:nobody -R /cache/ssl /cache/web
 
 # This step is very slow, you can cache it by keeping
 # a rw volume mounted on /cache. Re-using the dhparam.pem
@@ -12,7 +12,7 @@ mkdir -p /cache/web
 if [ ! -f /cache/ssl/dhparam.pem ]
 then
 	echo "Generating Diffie-Hellman parameters..."
-	echo "This takes about 20 minutes. You can cach it by mounting a"
+	echo "This takes about 20 minutes. You can cache it by mounting a"
 	echo "rw volume under \"/cache\"."
 	openssl dhparam -out /cache/ssl/dhparam.pem 4096
 else
@@ -36,15 +36,9 @@ echo "Exempting Cloudflare from rate limiting..."
 export RATE_EXEMPT=$(curl https://www.cloudflare.com/ips-v4 https://www.cloudflare.com/ips-v6 | awk '{print $0,"0;"}')
 
 echo "Configuring nginx..."
-if [ -z "$DOMAIN" ]; then
-	echo "No domain set. Removing Let's Encrypt certification."
-	for FILE in /etc/nginx/*.conf
-	do
-		sed -i '/letsencrypt/d' "$FILE"
-	done
-	export DOMAIN="$(ip r | awk '/src/{print $5}')"
-	echo "You can set a domain name by setting the \$DOMAIN environment"
-	echo "variable. Falling back to hostname \"$DOMAIN\"."
+if [ -z "$DOMAINS" ]; then
+	echo "No domain names specified. HTTPS will be unavailable."
+	exit 1
 fi
 if [ -z "$ORIGIN_HOST" ]; then
 	echo "You need to provide the upstream hostname in \$ORIGIN_HOST"
@@ -53,7 +47,7 @@ fi
 if [ -z "$ORIGIN_PORT" ]; then
 	export ORIGIN_PORT=80
 fi
-VARIABLES=" \$DOMAIN \$ORIGIN_HOST \$ORIGIN_PORT \$RATE_EXEMPT"
+VARIABLES=" \$DOMAINS \$ORIGIN_HOST \$ORIGIN_PORT \$RATE_EXEMPT"
 for FILE in /etc/nginx/*.conf
 do
 	echo "$FILE"
@@ -62,9 +56,4 @@ do
 done
 
 echo "Starting nginx..."
-echo "Server available at:"
-echo ""
-echo "     http://${DOMAIN}/"
-echo "    https://${DOMAIN}/"
-echo ""
 exec /usr/local/openresty/bin/openresty -c /etc/nginx/nginx.conf -g "daemon off;"

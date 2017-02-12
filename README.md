@@ -6,14 +6,14 @@ Environment variables:
 
 * `ORIGIN_HOST` main server hostname or ip address
 * `ORIGIN_PORT` main server port (optional, defaults to 80)
-* `DOMAIN` domain name (optional, when supplied it wil get a valid certificate)
+* `DOMAINS` regular expression of valid domains
 
 Volumes:
 
 * `/cache` mount a `rw` volume to cache SSL private keys and web content
 
 ```
-docker run -t -p 80:80 -p 443:443 -v $(pwd)/cache:/cache:rw -e DOMAIN=example.com -e ORIGIN_HOST=google.com front
+docker run -t -p 80:80 -p 443:443 -v $(pwd)/cache:/cache:rw -e ORIGIN_HOST=172.217.18.206 -e DOMAINS=test front
 ```
 
 # Caching
