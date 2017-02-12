@@ -8,8 +8,12 @@ Environment variables:
 * `ORIGIN_PORT` main server port (optional, defaults to 80)
 * `DOMAIN` domain name (optional, when supplied it wil get a valid certificate)
 
+Volumes:
+
+* `/cache` mount a `rw` volume to cache SSL private keys and web content
+
 ```
-docker run -t -p 80:80 -p 443:443 -v $(pwd)/test/dhparam.pem:/etc/ssl/dhparam.pem:ro -e DOMAIN=docker.neufund.org -e ORIGIN_HOST=google.com front
+docker run -t -p 80:80 -p 443:443 -v $(pwd)/cache:/cache:rw -e DOMAIN=example.com -e ORIGIN_HOST=google.com front
 ```
 
 # Caching
@@ -22,7 +26,7 @@ cached.
 The `X-Accel-Expires` header can be used to change the default cache time. The
 value `0` disables caching of the result. Other numbers set the cache validity
 in seconds. The normal cache affecting headers `Expires`, `Cache-Control`,
-`Set-Cookie`, `Vary` are ignored, but they are passed to the
+`Set-Cookie`, `Vary` are ignored, but they are passed to the 
 
 The cache can be explicitely invalidated by the `ORIGIN_HOST`. To do this, the
 origin sends the request to be invalidated with an additional header

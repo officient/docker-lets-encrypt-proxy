@@ -2,24 +2,33 @@
 set +e
 echo "Machine has $(grep processor /proc/cpuinfo | wc -l) cores and $(awk '/MemTotal/ {print $2}' /proc/meminfo) kB RAM."
 
+# Create cache folders if they don't exits
+mkdir -p /cache/ssl
+mkdir -p /cache/web
+
 # This step is very slow, you can cache it by keeping
-# /etc/ssl/dhparam.pem mounted as a volume. Re-using
-# the dhparam.pem does not hurt security much.
-if [ ! -f /etc/ssl/dhparam.pem ]
+# a rw volume mounted on /cache. Re-using the dhparam.pem
+# does not hurt security much.
+if [ ! -f /cache/ssl/dhparam.pem ]
 then
 	echo "Generating Diffie-Hellman parameters..."
-	echo "This takes about 20 minutes. You can avoid it by mounting a pre-"
-	echo "generated pair under \"/etc/ssl/dhparam.pem\"."
-	openssl dhparam -out /etc/ssl/dhparam.pem 4096
+	echo "This takes about 20 minutes. You can cach it by mounting a"
+	echo "rw volume under \"/cache\"."
+	openssl dhparam -out /cache/ssl/dhparam.pem 4096
 else
 	echo "Using existing Diffie-Hellman parameters."
 fi
 
-echo "Generating self-signed fallback certificate..."
-openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 \
-	-subj '/CN=sni-support-required-for-valid-ssl' \
-	-keyout /etc/ssl/resty-auto-ssl-fallback.key \
-	-out /etc/ssl/resty-auto-ssl-fallback.crt
+if [ ! -f /cache/ssl/resty-auto-ssl-fallback.key ]
+then
+	echo "Generating self-signed fallback certificate..."
+	openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 \
+		-subj '/CN=sni-support-required-for-valid-ssl' \
+		-keyout /cache/ssl/resty-auto-ssl-fallback.key \
+		-out /cache/ssl/resty-auto-ssl-fallback.crt
+else
+	echo "Using existing self-signed fallback certificate."
+fi
 
 echo "Exempting Cloudflare from rate limiting..."
 # See: https://www.cloudflare.com/ips-v4
