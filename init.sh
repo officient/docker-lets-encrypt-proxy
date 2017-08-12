@@ -11,10 +11,10 @@ chown nobody:nobody -R /cache/ssl /cache/web
 # does not hurt security much.
 if [ ! -f /cache/ssl/dhparam.pem ]
 then
-	echo "Generating Diffie-Hellman parameters..."
+	echo "Generating Diffie-Hellman parameters...(2048 bit)"
 	echo "This takes about 20 minutes. You can cache it by mounting a"
 	echo "rw volume under \"/cache\"."
-	openssl dhparam -out /cache/ssl/dhparam.pem 4096
+	openssl dhparam -out /cache/ssl/dhparam.pem 2048
 else
 	echo "Using existing Diffie-Hellman parameters."
 fi
