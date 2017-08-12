@@ -4,9 +4,7 @@ Nginx Reverse Proxy automatically managing Let's Encrypt certificates
 
 Environment variables:
 
-* `ORIGIN_HOST` main server hostname or ip address
-* `ORIGIN_PORT` main server port (optional, defaults to 80)
-* `DOMAINS` regular expression of valid domains (DEPRECATED - all domains allowed in this test build)
+* `ORIGIN_HOST` main server hostname or ip address (eg https://www.domain.com ) 
 
 Volumes:
 

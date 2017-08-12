@@ -40,10 +40,7 @@ if [ -z "$ORIGIN_HOST" ]; then
 	echo "You need to provide the upstream hostname in \$ORIGIN_HOST"
 	exit 1
 fi
-if [ -z "$ORIGIN_PORT" ]; then
-	export ORIGIN_PORT=80
-fi
-VARIABLES=" \$ORIGIN_HOST \$ORIGIN_PORT \$RATE_EXEMPT"
+VARIABLES=" \$ORIGIN_HOST \$RATE_EXEMPT"
 for FILE in /etc/nginx/*.conf
 do
 	echo "$FILE"
