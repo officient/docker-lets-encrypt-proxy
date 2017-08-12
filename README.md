@@ -13,5 +13,5 @@ Volumes:
 * `/cache` mount a `rw` volume to cache SSL private keys and web content
 
 ```
-docker run -t -p 80:80 -p 443:443 -v $(pwd)/cache:/cache:rw -e ORIGIN_HOST=172.217.18.206 -e DOMAINS=test front
+docker run -t -p 80:80 -p 443:443 -v $(pwd)/cache:/cache:rw -e ORIGIN_HOST=172.217.18.206 -e front
 ```

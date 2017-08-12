@@ -36,10 +36,6 @@ echo "Exempting Cloudflare from rate limiting..."
 export RATE_EXEMPT=$(curl https://www.cloudflare.com/ips-v4 https://www.cloudflare.com/ips-v6 | awk '{print $0,"0;"}')
 
 echo "Configuring nginx..."
-if [ -z "$DOMAINS" ]; then
-	echo "No domain names specified. HTTPS will be unavailable."
-	exit 1
-fi
 if [ -z "$ORIGIN_HOST" ]; then
 	echo "You need to provide the upstream hostname in \$ORIGIN_HOST"
 	exit 1
@@ -47,7 +43,7 @@ fi
 if [ -z "$ORIGIN_PORT" ]; then
 	export ORIGIN_PORT=80
 fi
-VARIABLES=" \$DOMAINS \$ORIGIN_HOST \$ORIGIN_PORT \$RATE_EXEMPT"
+VARIABLES=" \$ORIGIN_HOST \$ORIGIN_PORT \$RATE_EXEMPT"
 for FILE in /etc/nginx/*.conf
 do
 	echo "$FILE"
