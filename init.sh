@@ -30,17 +30,12 @@ else
 	echo "Using existing self-signed fallback certificate."
 fi
 
-echo "Exempting Cloudflare from rate limiting..."
-# See: https://www.cloudflare.com/ips-v4
-# See: https://www.cloudflare.com/ips-v6
-export RATE_EXEMPT=$(curl https://www.cloudflare.com/ips-v4 https://www.cloudflare.com/ips-v6 | awk '{print $0,"0;"}')
-
 echo "Configuring nginx..."
 if [ -z "$ORIGIN_HOST" ]; then
 	echo "You need to provide the upstream hostname in \$ORIGIN_HOST"
 	exit 1
 fi
-VARIABLES=" \$ORIGIN_HOST \$RATE_EXEMPT"
+VARIABLES=" \$ORIGIN_HOST"
 for FILE in /etc/nginx/*.conf
 do
 	echo "$FILE"
