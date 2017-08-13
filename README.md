@@ -6,10 +6,10 @@ Environment variables:
 
 * `ORIGIN_HOST` main server hostname or ip address (eg https://www.domain.com ) 
 
-Volumes:
+# Instructions for deploying to AWS
 
-* `/cache` mount a `rw` volume to cache SSL private keys and web content
-
-```
-docker run -t -p 80:80 -p 443:443 -v $(pwd)/cache:/cache:rw -e ORIGIN_HOST=172.217.18.206 -e front
-```
+* Create a new Amazon ECS cluster
+* Make sure ports 80 and 443 are open to all inbound traffic
+* Create a new ECS task pointing to this repo, make sure the ORIGIN_HOST variable is set
+* Deploy the task to the ECS cluster
+* Point new domains to the ECS cluster
