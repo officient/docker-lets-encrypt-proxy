@@ -13,3 +13,21 @@ Environment variables:
 * Create a new ECS task pointing to this repo, make sure the ORIGIN_HOST variable is set
 * Deploy the task to the ECS cluster
 * Point new domains to the ECS cluster
+
+## Building locally
+
+In case you need to look around in the container image locally, you can build and run it.
+
+```bash
+docker build --platform linux/x86_64 .
+
+docker images
+# replace `30c` with part of your newly built image
+docker run --rm -it --platform=linux/amd64 -e ORIGIN_HOST=https://google.com 30c
+
+docker ps
+# replace `4f32` with part of your newly running container
+docker exec -it 4f32 /bin/sh
+
+# now you have a shell where you can check-out `openssl` or other installed binaries
+```
