@@ -1,3 +1,5 @@
+> ⚠️ This repository has been migrated to [Azure Devops](https://dev.azure.com/ExactGroup/Officient)
+
 # docker-lets-encrypt-proxy
 
 Nginx Reverse Proxy automatically managing Let's Encrypt certificates
